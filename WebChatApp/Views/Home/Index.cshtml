@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="container" style="display:flex;justify-content:center;flex-flow:column;padding:10px; height:300px;width:80%">
+	<label>Nome</label>
+	<input id="username" type="text" />
+	<br />
+
+	<label>Mensagem</label>
+	<input type="text" id="usermessage" style="height:50px;" />
+	<br />
+
+	<input type="button" id="btnsendmessage" value="Send message" />
+</div>
+
+<div class="container" style="display:flex;justify-content:center;">
+	<ul id="messageList">
+	</ul>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+
+
+<script type="text/javascript">
+
+    //Buscando o endereço do signalR
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chat/").build();
+
+    document.getElementById("btnsendmessage").disabled = true;
+
+	connection.on("ReceiveMesssage", function (user, message) {
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var encodeMsg = user + " : " + msg;
+        var li = document.createElement("li");
+        li.textContent = encodeMsg;
+        document.getElementById("messageList").appendChild(li)
+    });
+
+    connection.start().then(function () {
+        document.getElementById("btnsendmessage").disabled = false;
+    }).catch(function (e) {
+        return console.error(e)
+    });
+
+
+    //Ao clicar no botão
+    document.getElementById("btnsendmessage").addEventListener("click", function (eve) {
+        var user = document.getElementById("username").value;
+        var message = document.getElementById("usermessage").value;
+        connection.invoke("SendMessage", user, message).catch(function (e) {
+            return console.error(e);
+        });
+
+        eve.preventDefault();
+
+    });
+
+
+
+</script>
