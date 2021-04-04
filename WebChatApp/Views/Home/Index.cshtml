@@ -1,9 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
 }
 
+<h3 id="nome"></h3>
+<h3 id="status"></h3>
 
-<div class="container" style="display:flex;justify-content:center;flex-flow:column;padding:10px; height:300px;width:80%">
+
+<div class="container"
+	 style="display:flex;justify-content:center;flex-flow:column;padding:10px; height:300px;width:80%">
 	<label>Nome</label>
 	<input id="username" type="text" />
 	<br />
@@ -27,37 +31,39 @@
 
 <script type="text/javascript">
 
-    //Buscando o endereço do signalR
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chat/").build();
 
-    document.getElementById("btnsendmessage").disabled = true;
+
+	//Buscando o endereço do signalR
+	var connection = new signalR.HubConnectionBuilder().withUrl("/chat/").build();
+
+	document.getElementById("btnsendmessage").disabled = true;
 
 	connection.on("ReceiveMesssage", function (user, message) {
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var encodeMsg = user + " : " + msg;
-        var li = document.createElement("li");
-        li.textContent = encodeMsg;
-        document.getElementById("messageList").appendChild(li)
-    });
+		var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		var encodeMsg = user + " : " + msg;
+		var li = document.createElement("li");
+		li.textContent = encodeMsg;
+		document.getElementById("messageList").appendChild(li)
+	});
 
-    connection.start().then(function () {
-        document.getElementById("btnsendmessage").disabled = false;
-    }).catch(function (e) {
-        return console.error(e)
-    });
+	connection.start().then(function () {
+		document.getElementById("btnsendmessage").disabled = false;
+	}).catch(function (e) {
+		return console.error(e)
+	});
 
 
-    //Ao clicar no botão
-    document.getElementById("btnsendmessage").addEventListener("click", function (eve) {
-        var user = document.getElementById("username").value;
-        var message = document.getElementById("usermessage").value;
-        connection.invoke("SendMessage", user, message).catch(function (e) {
-            return console.error(e);
-        });
+	//Ao clicar no botão
+	document.getElementById("btnsendmessage").addEventListener("click", function (eve) {
+		var user = document.getElementById("username").value;
+		var message = document.getElementById("usermessage").value;
+		connection.invoke("SendMessage", user, message).catch(function (e) {
+			return console.error(e);
+		});
 
-        eve.preventDefault();
+		eve.preventDefault();
 
-    });
+	});
 
 
 

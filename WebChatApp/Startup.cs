@@ -24,6 +24,11 @@ namespace WebChatApp
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddCors(a => {
+				a.AddDefaultPolicy(df =>{
+					df.WithOrigins("*").WithMethods("*").WithHeaders("*");
+				});
+			});
 			services.AddControllersWithViews();
 			services.AddSignalR();
 		}
@@ -44,6 +49,8 @@ namespace WebChatApp
 			}
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
+
+			app.UseCors();
 
 			app.UseSignalR(s =>
 			{
